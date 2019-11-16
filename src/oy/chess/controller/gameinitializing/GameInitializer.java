@@ -9,10 +9,11 @@ public class GameInitializer {
 
   public static Game getInitializedGame(GameMode gameMode) {
 
-    //TODO
+    // TODO
     switch (gameMode) {
       case HUMAN_VS_HUMAN:
       case GAME_REPLAY:
+      case AI_VS_AI:
         Player whitePlayer = NormalPlayerInitializer.getInitializedPlayer(PlayerColor.WHITE);
         Player blackPlayer = NormalPlayerInitializer.getInitializedPlayer(PlayerColor.BLACK);
 

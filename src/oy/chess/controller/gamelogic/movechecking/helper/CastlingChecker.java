@@ -4,6 +4,7 @@ import oy.chess.model.game.Game;
 import oy.chess.model.move.Move;
 import oy.chess.model.piece.Piece;
 import oy.chess.model.piece.PieceType;
+import oy.chess.model.player.PlayerColor;
 import oy.chess.model.position.Position;
 
 import java.util.Optional;
@@ -11,6 +12,10 @@ import java.util.Optional;
 public class CastlingChecker {
   public static boolean isCastling(Move move, Piece chosenPiece, Game game) {
     if (chosenPiece.hasMoved()) return false;
+
+    int row = chosenPiece.getOwnerPlayerColor() == PlayerColor.WHITE ? 7 : 0;
+
+    if(move.getNewPosition().getX() != row)return false;
 
     // Castling to left.
     if (move.getNewPosition().getY() == 1) {

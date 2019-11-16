@@ -28,6 +28,8 @@ public class ProgramWindow extends BorderPane {
 
   private static ListView<GameMetaInformation> uploadedGames;
 
+  private static GameMode gameMode;
+
   private ProgramWindow(ChessBoard chessBoard, IMainGameController controller, GameMode gameMode) {
 
     ProgramWindow.chessBoard = chessBoard;
@@ -43,7 +45,8 @@ public class ProgramWindow extends BorderPane {
     ProgramWindowFactory.addAGNAnnotation(this, whiteMoves, blackMoves);
     ProgramWindowFactory.addGameList(this, uploadedGames);
 
-    if (gameMode == GameMode.GAME_REPLAY) ProgramWindowFactory.addReplayOptions(this);
+    ProgramWindow.gameMode = gameMode;
+    if (gameMode == GameMode.GAME_REPLAY || gameMode == GameMode.AI_VS_AI) ProgramWindowFactory.addReplayOptions(this);
   }
 
   public static ProgramWindow getInstance(
@@ -129,5 +132,21 @@ public class ProgramWindow extends BorderPane {
 
   public static void setChessBoard(ChessBoard chessBoard) {
     ProgramWindow.chessBoard = chessBoard;
+  }
+
+  public static ProgramWindow getProgramWindow() {
+    return programWindow;
+  }
+
+  public static void setProgramWindow(ProgramWindow programWindow) {
+    ProgramWindow.programWindow = programWindow;
+  }
+
+  public static GameMode getGameMode() {
+    return gameMode;
+  }
+
+  public static void setGameMode(GameMode gameMode) {
+    ProgramWindow.gameMode = gameMode;
   }
 }

@@ -11,7 +11,7 @@ public class Main extends Application {
   @Override
   public void start(Stage primaryStage) {
     IMainGameController controller =
-        MainGameControllerFactory.getMainGameControllerInstance(GameMode.GAME_REPLAY);
+        MainGameControllerFactory.getMainGameControllerInstance(GameMode.AI_VS_AI);
     assert controller != null;
     controller.startGame(primaryStage);
   }

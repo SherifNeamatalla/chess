@@ -80,4 +80,16 @@ public class GameUtilHelper {
       return game.getWhitePlayer().getPieces();
     }
   }
+
+  public static List<Piece> getPiecesByPlayerColor(Game game, PlayerColor playerColor) {
+    if (playerColor == PlayerColor.WHITE) return game.getWhitePlayer().getPieces();
+    else if (playerColor == PlayerColor.BLACK) return game.getBlackPlayer().getPieces();
+    return new ArrayList<>();
+  }
+
+  public static List<Piece> getOppositePiecesByPlayerColor(Game game, PlayerColor playerColor) {
+    if (playerColor == PlayerColor.BLACK) return game.getWhitePlayer().getPieces();
+    else if (playerColor == PlayerColor.WHITE) return game.getBlackPlayer().getPieces();
+    return new ArrayList<>();
+  }
 }

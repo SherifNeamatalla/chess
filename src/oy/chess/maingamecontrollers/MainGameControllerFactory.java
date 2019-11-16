@@ -10,6 +10,8 @@ public class MainGameControllerFactory {
         return new TwoPlayersMainGameController();
       case GAME_REPLAY:
         return new ReplayMainGameController();
+      case AI_VS_AI:
+        return new AIVsAIMainGameController();
     }
     return null;
   }

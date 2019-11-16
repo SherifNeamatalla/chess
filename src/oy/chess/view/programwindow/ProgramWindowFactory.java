@@ -4,6 +4,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import oy.chess.model.game.GameMetaInformation;
+import oy.chess.model.game.GameMode;
 import oy.chess.model.move.Move;
 import oy.chess.view.ProgramWindow;
 
@@ -25,7 +26,9 @@ public class ProgramWindowFactory {
   }
 
   public static void addReplayOptions(ProgramWindow programWindow) {
-    programWindow.setBottom(getReplayOptions());
+    if (ProgramWindow.getGameMode() == GameMode.GAME_REPLAY
+        || ProgramWindow.getGameMode() == GameMode.AI_VS_AI)
+      programWindow.setBottom(getReplayOptions());
   }
 
   private static HBox getTopBar() {
