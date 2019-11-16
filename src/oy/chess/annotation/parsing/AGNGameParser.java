@@ -16,7 +16,13 @@ public class AGNGameParser {
     return parsedTurns.stream()
         .map(p -> p.split("\\s"))
         .flatMap(l -> List.of(l).stream())
-        .filter(p -> p.length() > 0 && !p.matches("\\s+") && !p.matches("\\d{1,3}-\\d{1,3}"))
+        .filter(
+            p ->
+                p.length() > 0
+                    && !p.matches("\\s+")
+                    && (AGNPositionParser.parseAGNPosition(p) != null
+                        || p.equals("O-O")
+                        || p.equals("O-O-O")))
         .collect(Collectors.toList());
   }
 }
