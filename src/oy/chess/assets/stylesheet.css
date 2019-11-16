@@ -1,0 +1,43 @@
+.chess-cell {
+    /* stage size (400)/8 cells */
+    -fx-min-height: 50px;
+    -fx-min-width: 50px;
+    -fx-pref-height: 50px;
+    -fx-pref-width: 50px;
+    -fx-max-height: 50px;
+    -fx-max-width: 50px;
+
+    /* prevent rounded buttons */
+    -fx-background-radius: 0em;
+}
+
+.chess-cell-light {
+    -fx-background-color: #FFCE9E;
+}
+
+.chess-cell-dark {
+    -fx-background-color: #D18B47;
+}
+
+.chess-cell-check {
+    -fx-background-color: red;
+}
+
+.chess-cell-active {
+    -fx-background-color: yellow;
+}
+
+.chat-box {
+    -fx-padding: 10px;
+    -fx-pref-width: 200px;
+    -fx-max-width: 300px;
+}
+
+.chat-area {
+    -fx-pref-height: 150px;
+}
+
+.chat-field {
+
+}
+
