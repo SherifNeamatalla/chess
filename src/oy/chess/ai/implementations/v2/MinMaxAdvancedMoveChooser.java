@@ -1,4 +1,4 @@
-package oy.chess.ai.impelementations.v2;
+package oy.chess.ai.implementations.v2;
 
 import oy.chess.ai.minmax.interfaces.IMinMaxBestMoveChooser;
 import oy.chess.ai.minmax.model.MinMaxEnum;

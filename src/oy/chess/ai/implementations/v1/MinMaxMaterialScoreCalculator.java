@@ -1,24 +1,27 @@
-package oy.chess.ai.impelementations.basic;
+package oy.chess.ai.implementations.v1;
 
 import oy.chess.ai.minmax.interfaces.IMinMaxScoreCalculator;
+import oy.chess.controller.gamelogic.movecalculating.verifiers.KingCheckVerifier;
 import oy.chess.model.game.Game;
 import oy.chess.model.piece.Piece;
+import oy.chess.model.piece.PieceType;
 import oy.chess.model.player.PlayerColor;
 import oy.chess.util.GameUtilHelper;
 
 import java.util.List;
+import java.util.Optional;
 
 public class MinMaxMaterialScoreCalculator implements IMinMaxScoreCalculator {
 
-  private static final int PAWN_SCORE = 1;
+  private static final int PAWN_SCORE = 100;
 
-  private static final int BISHOP_SCORE = 1;
+  private static final int BISHOP_SCORE = 330;
 
-  private static final int KNIGHT_SCORE = 1;
+  private static final int KNIGHT_SCORE = 320;
 
-  private static final int QUEEN_SCORE = 1;
+  private static final int QUEEN_SCORE = 900;
 
-  private static final int ROOK_SCORE = 1;
+  private static final int ROOK_SCORE = 500;
 
   @Override
   public double getScore(Game game, PlayerColor currentPlayer) {
@@ -74,6 +77,20 @@ public class MinMaxMaterialScoreCalculator implements IMinMaxScoreCalculator {
         default:
       }
     }
+
+    // King might be captures in this case, cheaper than checking for checkmate for now
+    Optional<Piece> kingOptional =
+        currentPlayerPieces
+            .parallelStream()
+            .filter(p -> p.getPieceType() == PieceType.KING)
+            .findFirst();
+
+    if (kingOptional.isEmpty()) return Integer.MIN_VALUE;
+
+    boolean isCheckToCurrentPlayer =
+        KingCheckVerifier.positionIsCheck(kingOptional.get().getPosition(), idlePlayerPieces, game);
+
+    if (isCheckToCurrentPlayer) score -= 15;
 
     return score;
   }

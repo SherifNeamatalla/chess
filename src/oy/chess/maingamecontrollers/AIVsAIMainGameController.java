@@ -29,6 +29,8 @@ public class AIVsAIMainGameController implements IMainGameController {
   private MinMaxRunner minMaxRunnerBlackPlayer =
       new MinMaxRunner(MinMaxHeuristic.MATERIAL, MinMaxPieceChoosingStrategy.FIRST_FOUND);
 
+  private static final long WAITING_TIME_MS = 1000;
+
   @Override
   public void startGame(Stage primaryStage) {
 
@@ -60,6 +62,8 @@ public class AIVsAIMainGameController implements IMainGameController {
     chessBoard.setChosenPosition(move.getOldPosition());
 
     ChessBoardReplayModeLogicHandler.performMove(chessBoard, boardCell, controller);
+
+    doMove(boardCell);
   }
 
   @Override

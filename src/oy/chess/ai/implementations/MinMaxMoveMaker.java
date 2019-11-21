@@ -1,4 +1,4 @@
-package oy.chess.ai.impelementations;
+package oy.chess.ai.implementations;
 
 import oy.chess.ai.minmax.interfaces.IMinMaxMoveMaker;
 import oy.chess.controller.gamelogic.movecalculating.MoveCalculator;

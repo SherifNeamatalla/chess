@@ -30,7 +30,9 @@ class MinMax {
     // In case of base case, the position that's returned is null and is set in the layer above it
     // in the stack.
     if (depthLimit == 0) {
-      return new MinMaxResult(null, scoreCalculator.getScore(game, playerColor));
+        var score = scoreCalculator.getScore(game, playerColor);
+      System.out.println("Base case, Score : "+score+" Turn : "+currentMinMax);
+      return new MinMaxResult(null, score);
     }
 
     List<MinMaxResult> result = new ArrayList<>();
@@ -41,7 +43,7 @@ class MinMax {
     List<Move> moves = moveGenerator.generateMoves(game, branchingLimit);
 
     moves
-        .stream()
+        .parallelStream()
         .forEach(
             move -> {
               Game newGame = moveMaker.doMove(move, game);
@@ -65,7 +67,9 @@ class MinMax {
             });
 
     // Chooses best move according to current min or max.
+      MinMaxResult minMaxResult = minMaxBestMoveChooser.chooseBestMove(currentMinMax, result);
 
-    return minMaxBestMoveChooser.chooseBestMove(currentMinMax, result);
+    System.out.println("Best result : "+minMaxResult.getScore()+" Turn : "+currentMinMax+" Depth : "+depthLimit);
+    return minMaxResult;
   }
 }

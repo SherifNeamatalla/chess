@@ -1,6 +1,8 @@
-package oy.chess.ai.impelementations.basic;
+package oy.chess.ai.implementations.v1;
 
 import oy.chess.ai.minmax.interfaces.IMinMaxMoveGenerator;
+import oy.chess.controller.gamelogic.movecalculating.MoveCalculator;
+import oy.chess.controller.gamelogic.movecalculating.verifiers.KingCheckVerifier;
 import oy.chess.controller.gamelogic.movechecking.moveavailability.MoveAvailabilityChecker;
 import oy.chess.controller.gamelogic.movechecking.movevalidators.MoveValidator;
 import oy.chess.model.game.Game;
@@ -10,6 +12,7 @@ import oy.chess.model.position.Position;
 import oy.chess.util.GameUtilHelper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MinMaxDumbMoveGenerator implements IMinMaxMoveGenerator {
@@ -27,6 +30,11 @@ public class MinMaxDumbMoveGenerator implements IMinMaxMoveGenerator {
 
           if (MoveValidator.moveIsValid(move, piece, game)
               && MoveAvailabilityChecker.moveIsAvailable(move, piece, game)) {
+            Game newGame = MoveCalculator.calculateNormalMove(move, game);
+
+            if (KingCheckVerifier.gameIsCheck(newGame)) {
+              continue;
+            }
             move.setPieceType(piece.getPieceType());
             result.add(move);
           }
@@ -35,6 +43,8 @@ public class MinMaxDumbMoveGenerator implements IMinMaxMoveGenerator {
       }
     }
 
+    // If not shuffled the result will always be the same
+    Collections.shuffle(result);
     return result;
   }
 }
