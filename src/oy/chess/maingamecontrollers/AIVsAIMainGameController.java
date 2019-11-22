@@ -5,23 +5,17 @@ import javafx.stage.Stage;
 import oy.chess.ai.minmax.MinMaxRunner;
 import oy.chess.ai.minmax.model.MinMaxHeuristic;
 import oy.chess.ai.minmax.model.MinMaxPieceChoosingStrategy;
-import oy.chess.controller.Controller;
-import oy.chess.model.game.Game;
 import oy.chess.model.game.GameMetaInformation;
 import oy.chess.model.game.GameMode;
 import oy.chess.model.move.Move;
+import oy.chess.model.move.MoveResult;
 import oy.chess.model.player.PlayerColor;
 import oy.chess.view.ProgramWindow;
-import oy.chess.view.boardlogic.ChessBoardReplayModeLogicHandler;
 import oy.chess.view.boardlogic.util.ChessBoardFactory;
+import oy.chess.view.boardlogic.util.ChessBoardTurnChanger;
 import oy.chess.view.model.BoardCell;
-import oy.chess.view.model.ChessBoard;
 
-public class AIVsAIMainGameController implements IMainGameController {
-
-  private Controller controller;
-
-  private ChessBoard chessBoard;
+public class AIVsAIMainGameController extends AbstractMainGameController {
 
   private MinMaxRunner minMaxRunnerWhitePlayer =
       new MinMaxRunner(MinMaxHeuristic.MATERIAL, MinMaxPieceChoosingStrategy.NOT_PIECE_FAVORED);
@@ -34,18 +28,13 @@ public class AIVsAIMainGameController implements IMainGameController {
   @Override
   public void startGame(Stage primaryStage) {
 
-    controller = new Controller(GameMode.AI_VS_AI);
-    controller.startNewGame(GameMode.AI_VS_AI);
-    chessBoard = ChessBoardFactory.CreateBoardForReplay(this);
+    super.startGame(primaryStage);
+    this.chessBoard = ChessBoardFactory.CreateBoardForReplay(this);
+
     ProgramWindow window = ProgramWindow.getInstance(chessBoard, this, GameMode.AI_VS_AI);
     primaryStage.setTitle("Plumbes Chess AI Vs AI Mode");
     primaryStage.setScene(new Scene(window));
     primaryStage.show();
-  }
-
-  @Override
-  public Game getGame() {
-    return controller.getGame();
   }
 
   @Override
@@ -56,20 +45,16 @@ public class AIVsAIMainGameController implements IMainGameController {
     assert currentRunner != null;
     Move move = currentRunner.getBestMove(getGame());
 
-    boardCell =
-        chessBoard.getBoardCells()[move.getNewPosition().getX()][move.getNewPosition().getY()];
-
     chessBoard.setChosenPosition(move.getOldPosition());
 
-    ChessBoardReplayModeLogicHandler.performMove(chessBoard, boardCell, controller);
+    MoveResult moveResult = this.controller.doMove(move, this.game);
 
-    doMove(boardCell);
-  }
+    if (moveResult.isSuccess()) {
+      this.game = moveResult.getGame();
 
-  @Override
-  public Game startNewGame() {
+      ChessBoardTurnChanger.changeTurnAndRefreshBoardState(chessBoard, this.game);
+    }
 
-    return controller.startNewGame();
   }
 
   @Override

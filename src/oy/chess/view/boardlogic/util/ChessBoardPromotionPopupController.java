@@ -6,16 +6,16 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import oy.chess.model.game.Game;
-import oy.chess.model.piece.Piece;
 import oy.chess.model.piece.PieceType;
 import oy.chess.model.player.PlayerColor;
 import oy.chess.view.cell.ImagePathGetter;
 
+import java.util.Optional;
+
 class ChessBoardPromotionPopupController {
 
-  static boolean isPlayAgainCheckMate(Game game) {
-    String winner = game.getCurrentPlayerColor() == PlayerColor.WHITE ? "Black" : "White";
+  static boolean isPlayAgainCheckMate(PlayerColor currentPlayerColor) {
+    String winner = currentPlayerColor == PlayerColor.WHITE ? "Black" : "White";
 
     Alert playAgainAlert =
         new Alert(
@@ -53,39 +53,37 @@ class ChessBoardPromotionPopupController {
     return true;
   }
 
-  static void setPromotionResult(Game game) {
+  static PieceType getPromotionResult(PlayerColor currentPlayerColor) {
 
     ImageView queenImg =
-        new ImageView(
-            new Image(ImagePathGetter.getImage(PieceType.QUEEN, game.getCurrentPlayerColor())));
+        new ImageView(new Image(ImagePathGetter.getImage(PieceType.QUEEN, currentPlayerColor)));
 
     ImageView bishopImg =
-        new ImageView(
-            new Image(ImagePathGetter.getImage(PieceType.BISHOP, game.getCurrentPlayerColor())));
+        new ImageView(new Image(ImagePathGetter.getImage(PieceType.BISHOP, currentPlayerColor)));
 
     ImageView rookImg =
-        new ImageView(
-            new Image(ImagePathGetter.getImage(PieceType.ROOK, game.getCurrentPlayerColor())));
+        new ImageView(new Image(ImagePathGetter.getImage(PieceType.ROOK, currentPlayerColor)));
 
     ImageView knightImg =
-        new ImageView(
-            new Image(ImagePathGetter.getImage(PieceType.KNIGHT, game.getCurrentPlayerColor())));
+        new ImageView(new Image(ImagePathGetter.getImage(PieceType.KNIGHT, currentPlayerColor)));
     ChoiceDialog<ImageView> choiceDialog =
         new ChoiceDialog<>(knightImg, bishopImg, rookImg, queenImg);
 
-    choiceDialog
-        .showAndWait()
-        .ifPresent(
-            e -> {
-              if (e.equals(knightImg)) {
-                game.setPromotionResult(new Piece(1, null, PieceType.KNIGHT, null, true));
-              } else if (e.equals(bishopImg)) {
-                game.setPromotionResult(new Piece(1, null, PieceType.BISHOP, null, true));
-              } else if (e.equals(rookImg)) {
-                game.setPromotionResult(new Piece(1, null, PieceType.ROOK, null, true));
-              } else if (e.equals(queenImg)) {
-                game.setPromotionResult(new Piece(1, null, PieceType.QUEEN, null, true));
-              }
-            });
+    Optional<ImageView> promotionResult = choiceDialog.showAndWait();
+    if (promotionResult.isPresent()) {
+
+      ImageView result = promotionResult.get();
+
+      if (result.equals(knightImg)) {
+        return PieceType.KNIGHT;
+      } else if (result.equals(bishopImg)) {
+        return PieceType.BISHOP;
+      } else if (result.equals(rookImg)) {
+        return PieceType.ROOK;
+      } else if (result.equals(queenImg)) {
+        return PieceType.QUEEN;
+      }
+    }
+    return null;
   }
 }

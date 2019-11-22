@@ -3,7 +3,7 @@ package oy.chess.view;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import oy.chess.annotation.parsing.AGNFileOpener;
-import oy.chess.maingamecontrollers.IMainGameController;
+import oy.chess.maingamecontrollers.AbstractMainGameController;
 import oy.chess.model.game.GameMetaInformation;
 import oy.chess.model.game.GameMode;
 import oy.chess.model.move.Move;
@@ -20,7 +20,7 @@ public class ProgramWindow extends BorderPane {
   // Singelton
   private static ProgramWindow programWindow;
 
-  private static IMainGameController controller;
+  private static AbstractMainGameController controller;
 
   private static ChessBoard chessBoard;
 
@@ -30,7 +30,7 @@ public class ProgramWindow extends BorderPane {
 
   private static GameMode gameMode;
 
-  private ProgramWindow(ChessBoard chessBoard, IMainGameController controller, GameMode gameMode) {
+  private ProgramWindow(ChessBoard chessBoard, AbstractMainGameController controller, GameMode gameMode) {
 
     ProgramWindow.chessBoard = chessBoard;
     ProgramWindow.controller = controller;
@@ -50,7 +50,7 @@ public class ProgramWindow extends BorderPane {
   }
 
   public static ProgramWindow getInstance(
-      ChessBoard chessBoard, IMainGameController controller, GameMode gameMode) {
+          ChessBoard chessBoard, AbstractMainGameController controller, GameMode gameMode) {
 
     if (ProgramWindow.programWindow == null) {
       ProgramWindow.programWindow = new ProgramWindow(chessBoard, controller, gameMode);
@@ -118,11 +118,11 @@ public class ProgramWindow extends BorderPane {
     ProgramWindow.uploadedGames = uploadedGames;
   }
 
-  public static IMainGameController getController() {
+  public static AbstractMainGameController getController() {
     return controller;
   }
 
-  public static void setController(IMainGameController controller) {
+  public static void setController(AbstractMainGameController controller) {
     ProgramWindow.controller = controller;
   }
 

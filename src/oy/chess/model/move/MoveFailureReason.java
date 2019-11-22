@@ -6,5 +6,6 @@ public enum MoveFailureReason {
   WILL_BE_CHECK,
   MOVE_NOT_VALID,
   NOT_PLAYER_TURN,
+  NO_PROMOTION_TARGET,
   SUCCESS
 }

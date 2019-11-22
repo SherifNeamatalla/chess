@@ -1,8 +1,8 @@
 package oy.chess.controller.gamelogic.movecalculating;
 
-import oy.chess.util.GameUtilHelper;
 import oy.chess.model.game.Game;
 import oy.chess.model.move.Move;
+import oy.chess.model.piece.Piece;
 
 public class MoveCalculator {
 
@@ -11,15 +11,7 @@ public class MoveCalculator {
     return MoveCalculatorsManager.doMove(move, game);
   }
 
-  public static Game calculatePromotionMove(Move move, Game game) {
-
-    Game newGame = GameUtilHelper.copy(game);
-
-    if (newGame.getPromotionResult() == null) return newGame;
-
-    newGame = PromotionCalculator.calculate(move, newGame);
-    newGame = PieceCaptureCalculator.captureIfCaptured(move, newGame);
-
-    return newGame;
+  public static boolean isPromotion(Move move, Piece chosenPiece, Game game) {
+    return PromotionCalculator.isPromotion(move, chosenPiece, game);
   }
 }

@@ -9,39 +9,31 @@ import oy.chess.model.game.Game;
 import oy.chess.model.game.GameMetaInformation;
 import oy.chess.model.game.GameMode;
 import oy.chess.model.move.Move;
+import oy.chess.model.move.MoveResult;
+import oy.chess.model.piece.Piece;
 import oy.chess.model.piece.PieceType;
 import oy.chess.view.ProgramWindow;
-import oy.chess.view.boardlogic.ChessBoardReplayModeLogicHandler;
 import oy.chess.view.boardlogic.util.ChessBoardFactory;
 import oy.chess.view.boardlogic.util.ChessBoardRefresher;
+import oy.chess.view.boardlogic.util.ChessBoardTurnChanger;
 import oy.chess.view.model.BoardCell;
-import oy.chess.view.model.ChessBoard;
 
 import java.util.LinkedList;
 
-public class ReplayMainGameController implements IMainGameController {
-
-  private Controller controller;
+public class ReplayMainGameController extends AbstractMainGameController {
 
   private LinkedList<String> unparsedMoves;
-
-  private ChessBoard chessBoard;
 
   @Override
   public void startGame(Stage primaryStage) {
 
-    controller = new Controller(GameMode.GAME_REPLAY);
-    controller.startNewGame(GameMode.GAME_REPLAY);
-    chessBoard = ChessBoardFactory.CreateBoardForReplay(this);
+    super.startGame(primaryStage);
+    this.chessBoard = ChessBoardFactory.CreateBoardForReplay(this);
+
     ProgramWindow window = ProgramWindow.getInstance(chessBoard, this, GameMode.GAME_REPLAY);
     primaryStage.setTitle("Plumbes Chess Replay Mode");
     primaryStage.setScene(new Scene(window));
     primaryStage.show();
-  }
-
-  @Override
-  public Game getGame() {
-    return controller.getGame();
   }
 
   @Override
@@ -53,28 +45,23 @@ public class ReplayMainGameController implements IMainGameController {
 
       Move move = AGNMoveParser.parseAGNMove(unparsedMove, getGame());
 
-      boardCell =
-          chessBoard.getBoardCells()[move.getNewPosition().getX()][move.getNewPosition().getY()];
-
       chessBoard.setChosenPosition(move.getOldPosition());
 
       if (AGNMoveParser.isPromotion(unparsedMove)) {
 
         PieceType promotionResult = AGNMoveParser.getPromotionResult(unparsedMove);
 
-        ChessBoardReplayModeLogicHandler.performMoveWithPromotion(
-            chessBoard, boardCell, controller, promotionResult);
+        game.setPromotionResult(new Piece(1, null, promotionResult, null, true));
       }
 
-      ChessBoardReplayModeLogicHandler.performMove(chessBoard, boardCell, controller);
+      MoveResult moveResult = this.controller.doMove(move, this.game);
+
+      if (moveResult.isSuccess()) {
+        this.game = moveResult.getGame();
+
+        ChessBoardTurnChanger.changeTurnAndRefreshBoardState(chessBoard, this.game);
+      }
     }
-  }
-
-  @Override
-  public Game startNewGame() {
-    this.unparsedMoves = new LinkedList<>();
-
-    return controller.startNewGame();
   }
 
   @Override

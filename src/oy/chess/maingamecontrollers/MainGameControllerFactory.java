@@ -4,7 +4,7 @@ import oy.chess.model.game.GameMode;
 
 public class MainGameControllerFactory {
 
-  public static IMainGameController getMainGameControllerInstance(GameMode gameMode) {
+  public static AbstractMainGameController getMainGameControllerInstance(GameMode gameMode) {
     switch (gameMode) {
       case HUMAN_VS_HUMAN:
         return new TwoPlayersMainGameController();

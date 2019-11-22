@@ -4,7 +4,6 @@ import oy.chess.controller.gamelogic.movechecking.helper.CastlingChecker;
 import oy.chess.controller.gamelogic.movechecking.helper.EnpassantChecker;
 import oy.chess.controller.gamelogic.movechecking.helper.PieceFinder;
 import oy.chess.model.game.Game;
-import oy.chess.model.game.GameStatus;
 import oy.chess.model.move.Move;
 import oy.chess.model.move.MoveType;
 import oy.chess.model.piece.Piece;
@@ -38,8 +37,13 @@ class MoveCalculatorsManager {
         // In case of promotion no calculation is to be done, we have to wait for the user to enter
         // the new piece type.
         boolean isPromotion = PromotionCalculator.isPromotion(move, chosenPiece, newGame);
-        if (isPromotion) newGame.setGameStatus(GameStatus.IS_WAITING_FOR_PROMOTION_CHOICE);
-        else {
+        if (isPromotion) {
+          if (newGame.getPromotionResult() != null) {
+            newGame.getCurrentTurnActions().add(MoveType.PROMOTION);
+            newGame = PromotionCalculator.calculate(move, newGame);
+            newGame = PieceCaptureCalculator.captureIfCaptured(move, newGame);
+          }
+        } else {
           chosenPiece.setPosition(move.getNewPosition());
           newGame = PieceCaptureCalculator.captureIfCaptured(move, newGame);
         }

@@ -1,10 +1,11 @@
 package oy.chess.controller.gamelogic;
 
+import oy.chess.controller.gamelogic.movecalculating.MoveCalculator;
 import oy.chess.controller.gamelogic.movecalculating.verifiers.CheckMateVerifier;
 import oy.chess.controller.gamelogic.movecalculating.verifiers.KingCheckVerifier;
-import oy.chess.controller.gamelogic.movecalculating.MoveCalculator;
 import oy.chess.controller.gamelogic.movecalculating.verifiers.StaleMateVerifier;
 import oy.chess.controller.gamelogic.movechecking.helper.MoveChecker;
+import oy.chess.controller.gamelogic.movechecking.helper.PieceFinder;
 import oy.chess.model.game.Game;
 import oy.chess.model.game.GameStatus;
 import oy.chess.model.move.Move;
@@ -22,17 +23,12 @@ public class MoveMaker {
     if (moveFailureReason != MoveFailureReason.SUCCESS)
       return new MoveResult(game, false, moveFailureReason);
 
-    Game newGame;
-    // If last move was promotion, the game is waiting for promotion result
-    if (game.getGameStatus() == GameStatus.IS_WAITING_FOR_PROMOTION_CHOICE) {
-      newGame = MoveCalculator.calculatePromotionMove(move, game);
-      newGame.getCurrentTurnActions().add(MoveType.PROMOTION);
-    } else {
-      newGame = MoveCalculator.calculateNormalMove(move, game);
-    }
+    if (game.getPromotionResult() == null
+        && MoveCalculator.isPromotion(
+            move, PieceFinder.findPiece(move.getOldPosition(), game).get(), game))
+      return new MoveResult(game, false, MoveFailureReason.NO_PROMOTION_TARGET);
 
-    if (newGame.getGameStatus() == GameStatus.IS_WAITING_FOR_PROMOTION_CHOICE)
-      return new MoveResult(newGame, true);
+    Game newGame = MoveCalculator.calculateNormalMove(move, game);
 
     // Checks if after the move the player to be moving will be in check, if yes the move fails.
     boolean willBeCheck = KingCheckVerifier.gameIsCheck(newGame);
@@ -45,8 +41,6 @@ public class MoveMaker {
     if (isCheckToCurrentPlayer) {
       newGame.setGameStatus(GameStatus.IS_CHECK_TO_CURRENT_PLAYER);
       newGame.getCurrentTurnActions().add(MoveType.CHECK);
-    } else if (newGame.getGameStatus() != GameStatus.IS_WAITING_FOR_PROMOTION_CHOICE) {
-      newGame.setGameStatus(GameStatus.NORMAL);
     }
 
     if (isCheckToCurrentPlayer) {
@@ -56,13 +50,15 @@ public class MoveMaker {
       }
     }
 
-    boolean isStaleMate;
+    boolean isStaleMate = false;
 
     if (!isCheckToCurrentPlayer) {
       isStaleMate = StaleMateVerifier.isStaleMate(newGame);
 
       if (isStaleMate) newGame.setGameStatus(GameStatus.IS_STALE_MATE);
     }
+
+    if (!isStaleMate && !isCheckToCurrentPlayer) newGame.setGameStatus(GameStatus.NORMAL);
 
     // calling changeTurnTemporarily again to revert the changes, dirty but works
     newGame = GameUtilHelper.changeTurnTemporarily(newGame);

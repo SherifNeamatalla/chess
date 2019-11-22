@@ -1,14 +1,11 @@
 package oy.chess.view.boardlogic.util;
 
-import oy.chess.controller.Controller;
 import oy.chess.model.game.Game;
-import oy.chess.model.move.Move;
-import oy.chess.model.move.MoveResult;
 import oy.chess.model.piece.Piece;
 import oy.chess.model.piece.PieceType;
+import oy.chess.model.player.PlayerColor;
 import oy.chess.util.GameUtilHelper;
 import oy.chess.view.cell.CellPiecesSetter;
-import oy.chess.view.model.BoardCell;
 import oy.chess.view.model.ChessBoard;
 
 import java.util.Optional;
@@ -32,42 +29,13 @@ public class ChessBoardRefresher {
     board.setTurnStartState();
   }
 
-  static Game playAgainStaleMate(ChessBoard chessBoard, Game game, Controller controller) {
+  static boolean playAgainStaleMate() {
 
-    boolean isPlayAgain = ChessBoardPromotionPopupController.isPlayAgainStaleMate();
-
-    if (isPlayAgain) {
-      Game newGame = controller.startNewGame();
-      refreshBoard(chessBoard, newGame);
-      return newGame;
-    }
-    return game;
+    return ChessBoardPromotionPopupController.isPlayAgainStaleMate();
   }
 
-  static Game playAgainCheckMate(ChessBoard chessBoard, Game game, Controller controller) {
-    boolean isPlayAgain = ChessBoardPromotionPopupController.isPlayAgainCheckMate(game);
-
-    if (isPlayAgain) {
-      Game newGame = controller.startNewGame();
-      refreshBoard(chessBoard, newGame);
-      return newGame;
-    }
-    return game;
-  }
-
-  public static Game refreshBoardWithPromotion(
-          ChessBoard chessBoard, Game game, BoardCell boardCell, Controller controller) {
-
-    ChessBoardPromotionPopupController.setPromotionResult(game);
-
-    MoveResult moveResult =
-        controller.doMove(new Move(chessBoard.getChosenPosition(), boardCell.getPosition()));
-
-    Game newGame = moveResult.getGame();
-
-    refreshBoard(chessBoard, newGame);
-
-    return newGame;
+  static boolean playAgainCheckMate(PlayerColor playerColor) {
+    return ChessBoardPromotionPopupController.isPlayAgainCheckMate(playerColor);
   }
 
   static void refreshBoardWithCheck(ChessBoard chessBoard, Game game) {

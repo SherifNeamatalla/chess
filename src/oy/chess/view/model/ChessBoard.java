@@ -37,6 +37,10 @@ public class ChessBoard extends GridPane {
     return chosenPosition;
   }
 
+  public BoardCell getChosenCell() {
+    return this.boardCells[chosenPosition.getX()][chosenPosition.getY()];
+  }
+
   public void setChosenPosition(Position chosenPosition) {
     this.chosenPosition = chosenPosition;
   }
