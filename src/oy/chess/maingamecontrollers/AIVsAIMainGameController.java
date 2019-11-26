@@ -2,9 +2,8 @@ package oy.chess.maingamecontrollers;
 
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import oy.chess.ai.minmax.MinMaxRunner;
-import oy.chess.ai.minmax.model.MinMaxHeuristic;
-import oy.chess.ai.minmax.model.MinMaxPieceChoosingStrategy;
+import oy.chess.ai.AIPlayer;
+import oy.chess.ai.algorithm.model.*;
 import oy.chess.model.game.GameMetaInformation;
 import oy.chess.model.game.GameMode;
 import oy.chess.model.move.Move;
@@ -17,11 +16,25 @@ import oy.chess.view.model.BoardCell;
 
 public class AIVsAIMainGameController extends AbstractMainGameController {
 
-  private MinMaxRunner minMaxRunnerWhitePlayer =
-      new MinMaxRunner(MinMaxHeuristic.MATERIAL, MinMaxPieceChoosingStrategy.NOT_PIECE_FAVORED);
+  private AIPlayer whitePlayer =
+      new AIPlayer(
+          new AlgorithmConfiguration(
+              100,
+              3,
+              AlgorithmHeuristic.MATERIAL,
+              AlgorithmMoveGeneratingStrategy.BASIC,
+              AlgorithmMoveChoosingStrategy.BASIC,
+              Algorithm.MINMAX));
 
-  private MinMaxRunner minMaxRunnerBlackPlayer =
-      new MinMaxRunner(MinMaxHeuristic.MATERIAL, MinMaxPieceChoosingStrategy.FIRST_FOUND);
+  private AIPlayer blackPlayer =
+      new AIPlayer(
+          new AlgorithmConfiguration(
+              100,
+              3,
+              AlgorithmHeuristic.MATERIAL,
+              AlgorithmMoveGeneratingStrategy.BASIC,
+              AlgorithmMoveChoosingStrategy.BASIC,
+              Algorithm.MINMAX));
 
   private static final long WAITING_TIME_MS = 1000;
 
@@ -40,10 +53,11 @@ public class AIVsAIMainGameController extends AbstractMainGameController {
   @Override
   public void doMove(BoardCell boardCell) {
 
-    MinMaxRunner currentRunner = getCurrentMinMaxPlayer(getGame().getCurrentPlayerColor());
+    AIPlayer currentPlayer =
+        getCurrentPlayer(getGame().getCurrentPlayerColor());
 
-    assert currentRunner != null;
-    Move move = currentRunner.getBestMove(getGame());
+    assert currentPlayer != null;
+    Move move = currentPlayer.getBestMove(getGame());
 
     chessBoard.setChosenPosition(move.getOldPosition());
 
@@ -54,15 +68,14 @@ public class AIVsAIMainGameController extends AbstractMainGameController {
 
       ChessBoardTurnChanger.changeTurnAndRefreshBoardState(chessBoard, this.game);
     }
-
   }
 
   @Override
   public void uploadGame(GameMetaInformation gameMetaInformation) {}
 
-  private MinMaxRunner getCurrentMinMaxPlayer(PlayerColor playerColor) {
-    if (playerColor == PlayerColor.WHITE) return minMaxRunnerWhitePlayer;
-    else if (playerColor == PlayerColor.BLACK) return minMaxRunnerBlackPlayer;
+  private AIPlayer getCurrentPlayer(PlayerColor playerColor) {
+    if (playerColor == PlayerColor.WHITE) return whitePlayer;
+    else if (playerColor == PlayerColor.BLACK) return blackPlayer;
     return null;
   }
 }

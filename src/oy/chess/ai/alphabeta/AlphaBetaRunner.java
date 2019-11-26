@@ -1,4 +1,4 @@
-package oy.chess.ai.minmax;
+package oy.chess.ai.alphabeta;
 
 import oy.chess.ai.algorithm.interfaces.IAlgorithmMoveChooser;
 import oy.chess.ai.algorithm.interfaces.IAlgorithmMoveGenerator;
@@ -9,7 +9,7 @@ import oy.chess.ai.minmax.model.MinMaxEnum;
 import oy.chess.model.game.Game;
 import oy.chess.model.player.PlayerColor;
 
-public class MinMaxRunner implements IAlgorithmRunner {
+public class AlphaBetaRunner implements IAlgorithmRunner {
 
   private IAlgorithmScoreCalculator algorithmScoreCalculator;
 
@@ -21,7 +21,7 @@ public class MinMaxRunner implements IAlgorithmRunner {
 
   private int depthLimit;
 
-  public MinMaxRunner(
+  public AlphaBetaRunner(
       IAlgorithmScoreCalculator algorithmScoreCalculator,
       IAlgorithmMoveGenerator algorithmMoveGenerator,
       IAlgorithmMoveChooser algorithmBestMoveChooser,
@@ -34,14 +34,14 @@ public class MinMaxRunner implements IAlgorithmRunner {
     this.depthLimit = depthLimit;
   }
 
+  @Override
   public AlgorithmResult getBestMove(Game game) {
-
     MinMaxEnum currentMinMax = MinMaxEnum.MAX;
     PlayerColor currentPlayerColor = game.getCurrentPlayerColor();
 
     long startTime = System.currentTimeMillis();
     AlgorithmResult algorithmResult =
-        MinMax.getMinMax(
+        AlphaBeta.getAlphaBetaMinMax(
             this.algorithmMoveGenerator,
             this.algorithmScoreCalculator,
             this.algorithmBestMoveChooser,

@@ -1,9 +1,10 @@
-package oy.chess.ai.minmax;
+package oy.chess.ai.alphabeta;
 
 import oy.chess.ai.algorithm.interfaces.IAlgorithmMoveChooser;
 import oy.chess.ai.algorithm.interfaces.IAlgorithmMoveGenerator;
 import oy.chess.ai.algorithm.interfaces.IAlgorithmScoreCalculator;
 import oy.chess.ai.algorithm.model.AlgorithmResult;
+import oy.chess.ai.minmax.MinMaxChanger;
 import oy.chess.ai.minmax.model.MinMaxEnum;
 import oy.chess.controller.gamelogic.MoveMaker;
 import oy.chess.model.game.Game;
@@ -13,9 +14,9 @@ import oy.chess.model.player.PlayerColor;
 import java.util.ArrayList;
 import java.util.List;
 
-class MinMax {
+public class AlphaBeta {
 
-  static AlgorithmResult getMinMax(
+  static AlgorithmResult getAlphaBetaMinMax(
       IAlgorithmMoveGenerator moveGenerator,
       IAlgorithmScoreCalculator scoreCalculator,
       IAlgorithmMoveChooser minMaxBestMoveChooser,
@@ -48,7 +49,7 @@ class MinMax {
               Game newGame = MoveMaker.doGetMoveResult(move, game).getGame();
 
               AlgorithmResult algorithmResult =
-                  getMinMax(
+                  getAlphaBetaMinMax(
                       moveGenerator,
                       scoreCalculator,
                       minMaxBestMoveChooser,

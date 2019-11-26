@@ -2,9 +2,9 @@ package oy.chess.ai.minmax;
 
 import oy.chess.ai.minmax.model.MinMaxEnum;
 
-class MinMaxChanger {
+public class MinMaxChanger {
 
-  static MinMaxEnum changeMinMax(MinMaxEnum minMaxEnum) {
+  public static MinMaxEnum changeMinMax(MinMaxEnum minMaxEnum) {
     if (minMaxEnum == MinMaxEnum.MAX) {
       return MinMaxEnum.MIN;
     }
