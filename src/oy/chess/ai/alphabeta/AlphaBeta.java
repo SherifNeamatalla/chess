@@ -11,7 +11,6 @@ import oy.chess.model.game.Game;
 import oy.chess.model.move.Move;
 import oy.chess.model.player.PlayerColor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AlphaBeta {
@@ -19,12 +18,15 @@ public class AlphaBeta {
   static AlgorithmResult getAlphaBetaMinMax(
       IAlgorithmMoveGenerator moveGenerator,
       IAlgorithmScoreCalculator scoreCalculator,
-      IAlgorithmMoveChooser minMaxBestMoveChooser,
+      IAlgorithmMoveChooser bestMoveChooser,
       Game game,
       PlayerColor playerColor,
       int branchingLimit,
       int depthLimit,
-      MinMaxEnum currentMinMax) {
+      MinMaxEnum currentMinMax,
+      double alpha,
+      double beta) {
+
 
     // Base case, reached maximum tree depth.
     // In case of base case, the position that's returned is null and is set in the layer above it
@@ -35,46 +37,84 @@ public class AlphaBeta {
       return new AlgorithmResult(null, score);
     }
 
-    List<AlgorithmResult> result = new ArrayList<>();
     MinMaxEnum nextMinMax = MinMaxChanger.changeMinMax(currentMinMax);
     int newDepthLimit = depthLimit - 1;
 
     // Generate each move then calculate the score for every one of them.
     List<Move> moves = moveGenerator.generateMoves(game, branchingLimit);
 
-    moves
-        .parallelStream()
-        .forEach(
-            move -> {
-              Game newGame = MoveMaker.doGetMoveResult(move, game).getGame();
+    AlgorithmResult bestResult = null;
 
-              AlgorithmResult algorithmResult =
-                  getAlphaBetaMinMax(
-                      moveGenerator,
-                      scoreCalculator,
-                      minMaxBestMoveChooser,
-                      newGame,
-                      playerColor,
-                      branchingLimit,
-                      newDepthLimit,
-                      nextMinMax);
-              algorithmResult.setMove(move);
+    if (currentMinMax == MinMaxEnum.MAX) {
 
-              synchronized (result) {
-                result.add(algorithmResult);
-              }
-            });
+      double maxScore = Integer.MIN_VALUE;
 
-    // Chooses best move according to current min or max.
-    AlgorithmResult algorithmResult = minMaxBestMoveChooser.chooseBestMove(currentMinMax, result);
+      for (Move move : moves) {
+        Game newGame = MoveMaker.doGetMoveResult(move, game).getGame();
 
-    System.out.println(
-        "Best result : "
-            + algorithmResult.getScore()
-            + " Turn : "
-            + currentMinMax
-            + " Depth : "
-            + depthLimit);
-    return algorithmResult;
+        AlgorithmResult algorithmResult =
+            AlphaBeta.getAlphaBetaMinMax(
+                moveGenerator,
+                scoreCalculator,
+                bestMoveChooser,
+                newGame,
+                playerColor,
+                branchingLimit,
+                newDepthLimit,
+                nextMinMax,
+                alpha,
+                beta);
+
+        algorithmResult.setMove(move);
+
+        if (bestResult == null || maxScore <= algorithmResult.getScore()) {
+
+          bestResult = algorithmResult;
+
+          maxScore = algorithmResult.getScore();
+        }
+        alpha = Double.max(alpha, maxScore);
+        if (alpha >= beta) {
+
+          break;
+        }
+      }
+
+    } else if (currentMinMax == MinMaxEnum.MIN) {
+      for (Move move : moves) {
+
+        double minScore = Integer.MIN_VALUE;
+
+        Game newGame = MoveMaker.doGetMoveResult(move, game).getGame();
+
+        AlgorithmResult algorithmResult =
+            AlphaBeta.getAlphaBetaMinMax(
+                moveGenerator,
+                scoreCalculator,
+                bestMoveChooser,
+                newGame,
+                playerColor,
+                branchingLimit,
+                newDepthLimit,
+                nextMinMax,
+                alpha,
+                beta);
+
+        algorithmResult.setMove(move);
+
+        if (bestResult == null || minScore >= algorithmResult.getScore()) {
+
+          bestResult = algorithmResult;
+
+          minScore = algorithmResult.getScore();
+        }
+        beta = Double.min(beta, minScore);
+        if (alpha >= beta) {
+          break;
+        }
+      }
+    }
+
+    return bestResult;
   }
 }

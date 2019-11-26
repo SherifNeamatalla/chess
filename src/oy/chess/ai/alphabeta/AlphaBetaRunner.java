@@ -37,6 +37,8 @@ public class AlphaBetaRunner implements IAlgorithmRunner {
   @Override
   public AlgorithmResult getBestMove(Game game) {
     MinMaxEnum currentMinMax = MinMaxEnum.MAX;
+    double beta =  Integer.MAX_VALUE;
+    double alpha = Integer.MIN_VALUE;
     PlayerColor currentPlayerColor = game.getCurrentPlayerColor();
 
     long startTime = System.currentTimeMillis();
@@ -49,7 +51,8 @@ public class AlphaBetaRunner implements IAlgorithmRunner {
             currentPlayerColor,
             this.branchingLimit,
             this.depthLimit,
-            currentMinMax);
+            currentMinMax,alpha,beta
+                );
 
     long stopTime = System.currentTimeMillis();
     long elapsedTime = stopTime - startTime;

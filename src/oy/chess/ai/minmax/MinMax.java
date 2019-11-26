@@ -67,13 +67,6 @@ class MinMax {
     // Chooses best move according to current min or max.
     AlgorithmResult algorithmResult = minMaxBestMoveChooser.chooseBestMove(currentMinMax, result);
 
-    System.out.println(
-        "Best result : "
-            + algorithmResult.getScore()
-            + " Turn : "
-            + currentMinMax
-            + " Depth : "
-            + depthLimit);
     return algorithmResult;
   }
 }

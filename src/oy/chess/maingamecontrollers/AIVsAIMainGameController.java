@@ -24,7 +24,7 @@ public class AIVsAIMainGameController extends AbstractMainGameController {
               AlgorithmHeuristic.MATERIAL,
               AlgorithmMoveGeneratingStrategy.BASIC,
               AlgorithmMoveChoosingStrategy.BASIC,
-              Algorithm.MINMAX));
+              Algorithm.ALPHA_BETA));
 
   private AIPlayer blackPlayer =
       new AIPlayer(
