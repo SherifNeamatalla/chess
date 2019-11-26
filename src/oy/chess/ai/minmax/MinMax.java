@@ -30,7 +30,6 @@ class MinMax {
     // in the stack.
     if (depthLimit == 0) {
       var score = scoreCalculator.getScore(game, playerColor);
-      System.out.println("Base case, Score : " + score + " Turn : " + currentMinMax);
       return new AlgorithmResult(null, score);
     }
 
@@ -65,8 +64,7 @@ class MinMax {
             });
 
     // Chooses best move according to current min or max.
-    AlgorithmResult algorithmResult = minMaxBestMoveChooser.chooseBestMove(currentMinMax, result);
 
-    return algorithmResult;
+    return minMaxBestMoveChooser.chooseBestMove(currentMinMax, result);
   }
 }

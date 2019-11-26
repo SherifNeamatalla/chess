@@ -27,13 +27,11 @@ public class AlphaBeta {
       double alpha,
       double beta) {
 
-
     // Base case, reached maximum tree depth.
     // In case of base case, the position that's returned is null and is set in the layer above it
     // in the stack.
     if (depthLimit == 0) {
       var score = scoreCalculator.getScore(game, playerColor);
-      System.out.println("Base case, Score : " + score + " Turn : " + currentMinMax);
       return new AlgorithmResult(null, score);
     }
 
@@ -83,7 +81,7 @@ public class AlphaBeta {
     } else if (currentMinMax == MinMaxEnum.MIN) {
       for (Move move : moves) {
 
-        double minScore = Integer.MIN_VALUE;
+        double minScore = Integer.MAX_VALUE;
 
         Game newGame = MoveMaker.doGetMoveResult(move, game).getGame();
 
@@ -110,6 +108,7 @@ public class AlphaBeta {
         }
         beta = Double.min(beta, minScore);
         if (alpha >= beta) {
+
           break;
         }
       }
