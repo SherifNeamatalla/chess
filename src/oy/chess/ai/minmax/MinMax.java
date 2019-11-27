@@ -1,5 +1,6 @@
 package oy.chess.ai.minmax;
 
+import oy.chess.ai.algorithm.AlgorithmMoveMaker;
 import oy.chess.ai.algorithm.interfaces.IAlgorithmMoveChooser;
 import oy.chess.ai.algorithm.interfaces.IAlgorithmMoveGenerator;
 import oy.chess.ai.algorithm.interfaces.IAlgorithmScoreCalculator;
@@ -40,11 +41,16 @@ class MinMax {
     // Generate each move then calculate the score for every one of them.
     List<Move> moves = moveGenerator.generateMoves(game, branchingLimit);
 
+    if (moves.size() == 0) {
+      var score = scoreCalculator.getScore(game, playerColor);
+      return new AlgorithmResult(null, score);
+    }
+
     moves
-        .parallelStream()
+        .stream()
         .forEach(
             move -> {
-              Game newGame = MoveMaker.doGetMoveResult(move, game).getGame();
+              Game newGame = AlgorithmMoveMaker.doGetMoveResult(move, game);
 
               AlgorithmResult algorithmResult =
                   getMinMax(
@@ -56,14 +62,14 @@ class MinMax {
                       branchingLimit,
                       newDepthLimit,
                       nextMinMax);
+
+              // Null when there are no moves.
               algorithmResult.setMove(move);
 
               synchronized (result) {
                 result.add(algorithmResult);
               }
             });
-
-    // Chooses best move according to current min or max.
 
     return minMaxBestMoveChooser.chooseBestMove(currentMinMax, result);
   }

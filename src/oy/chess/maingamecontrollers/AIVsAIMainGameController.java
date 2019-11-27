@@ -4,10 +4,13 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import oy.chess.ai.AIPlayer;
 import oy.chess.ai.algorithm.model.*;
+import oy.chess.controller.gamelogic.movecalculating.PromotionCalculator;
+import oy.chess.controller.gamelogic.movechecking.helper.PieceFinder;
 import oy.chess.model.game.GameMetaInformation;
 import oy.chess.model.game.GameMode;
 import oy.chess.model.move.Move;
 import oy.chess.model.move.MoveResult;
+import oy.chess.model.piece.Piece;
 import oy.chess.model.player.PlayerColor;
 import oy.chess.view.ProgramWindow;
 import oy.chess.view.boardlogic.util.ChessBoardFactory;
@@ -19,18 +22,18 @@ public class AIVsAIMainGameController extends AbstractMainGameController {
   private AIPlayer whitePlayer =
       new AIPlayer(
           new AlgorithmConfiguration(
-              100,
-              3,
+              300,
+              2,
               AlgorithmHeuristic.MATERIAL,
               AlgorithmMoveGeneratingStrategy.BASIC,
               AlgorithmMoveChoosingStrategy.BASIC,
-              Algorithm.ALPHA_BETA));
+              Algorithm.MINMAX));
 
   private AIPlayer blackPlayer =
       new AIPlayer(
           new AlgorithmConfiguration(
-              100,
-              3,
+              300,
+              1,
               AlgorithmHeuristic.MATERIAL,
               AlgorithmMoveGeneratingStrategy.BASIC,
               AlgorithmMoveChoosingStrategy.BASIC,
@@ -53,11 +56,15 @@ public class AIVsAIMainGameController extends AbstractMainGameController {
   @Override
   public void doMove(BoardCell boardCell) {
 
-    AIPlayer currentPlayer =
-        getCurrentPlayer(getGame().getCurrentPlayerColor());
+    AIPlayer currentPlayer = getCurrentPlayer(getGame().getCurrentPlayerColor());
 
     assert currentPlayer != null;
     Move move = currentPlayer.getBestMove(getGame());
+
+    if (PromotionCalculator.isPromotion(
+        move, PieceFinder.findPiece(move.getOldPosition(), game).get(), game)) {
+      game.setPromotionResult(new Piece(1, null, move.getPieceType(), null, true));
+    }
 
     chessBoard.setChosenPosition(move.getOldPosition());
 

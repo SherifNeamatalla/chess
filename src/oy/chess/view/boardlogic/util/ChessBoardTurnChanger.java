@@ -14,6 +14,7 @@ public class ChessBoardTurnChanger {
     // This is because the turn has to change
     chessBoard.setTurnStartState();
 
+    ChessBoardRefresher.refreshBoard(chessBoard, game);
     boolean playAgain = false;
     // No else if between promotion and check because with one move both can occur
     if (game.getGameStatus() == GameStatus.IS_CHECK_TO_CURRENT_PLAYER) {
@@ -24,8 +25,6 @@ public class ChessBoardTurnChanger {
       playAgain = ChessBoardRefresher.playAgainStaleMate();
     } else if (game.getGameStatus() == GameStatus.IS_CHECK_MATE) {
       playAgain = ChessBoardRefresher.playAgainCheckMate(game.getCurrentPlayerColor());
-    } else {
-      ChessBoardRefresher.refreshBoard(chessBoard, game);
     }
 
     ProgramWindow.setCurrentMoves(game.getMoves());

@@ -30,6 +30,8 @@ class NormalPlayerInitializer {
             PieceType.KING,
             playerColor,
             false));
+    if (playerColor == PlayerColor.BLACK) return new HumanPlayer(playerColor, pieces);
+/*
     // Queen
     pieces.add(
         new Piece(
@@ -83,6 +85,9 @@ class NormalPlayerInitializer {
             PieceType.ROOK,
             playerColor,
             false));
+
+
+ */
     pieces.add(
         new Piece(
             PieceSequenceGenerator.getNextSequence(),

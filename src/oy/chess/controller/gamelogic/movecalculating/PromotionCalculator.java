@@ -11,8 +11,8 @@ import oy.chess.util.GameUtilHelper;
 
 import java.util.Optional;
 
-class PromotionCalculator {
-  static boolean isPromotion(Move move, Piece chosenPiece, Game game) {
+public class PromotionCalculator {
+  public static boolean isPromotion(Move move, Piece chosenPiece, Game game) {
     if (chosenPiece.getPieceType() != PieceType.PAWN) return false;
 
     // Movement validation will not be done here, it is assumed that the move is already correct.

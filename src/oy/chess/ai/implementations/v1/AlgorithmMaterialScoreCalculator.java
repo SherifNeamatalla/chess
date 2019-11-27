@@ -1,15 +1,15 @@
 package oy.chess.ai.implementations.v1;
 
 import oy.chess.ai.algorithm.interfaces.IAlgorithmScoreCalculator;
+import oy.chess.controller.gamelogic.movecalculating.verifiers.CheckMateVerifier;
 import oy.chess.controller.gamelogic.movecalculating.verifiers.KingCheckVerifier;
+import oy.chess.controller.gamelogic.movecalculating.verifiers.StaleMateVerifier;
 import oy.chess.model.game.Game;
 import oy.chess.model.piece.Piece;
-import oy.chess.model.piece.PieceType;
 import oy.chess.model.player.PlayerColor;
 import oy.chess.util.GameUtilHelper;
 
 import java.util.List;
-import java.util.Optional;
 
 public class AlgorithmMaterialScoreCalculator implements IAlgorithmScoreCalculator {
 
@@ -23,6 +23,10 @@ public class AlgorithmMaterialScoreCalculator implements IAlgorithmScoreCalculat
 
   private static final int ROOK_SCORE = 500;
 
+  private static final int STALEMATE_SCORE = -1;
+
+  private static final int CHECK_SCORE = 200;
+
   @Override
   public double getScore(Game game, PlayerColor currentPlayer) {
 
@@ -31,7 +35,35 @@ public class AlgorithmMaterialScoreCalculator implements IAlgorithmScoreCalculat
     List<Piece> idlePlayerPieces =
         GameUtilHelper.getOppositePiecesByPlayerColor(game, currentPlayer);
 
-    // TODO : Add score for check
+    // Returns -1 because we want stalemate to be at least as good as any other bad move, but not as
+    // bad as neutral moves.
+
+    boolean currentPlayerIsCurrentGamePlayer = currentPlayer == game.getCurrentPlayerColor();
+
+    boolean isCheckToCurrentPlayer = KingCheckVerifier.gameIsCheck(game);
+
+    if (isCheckToCurrentPlayer) {
+
+      if (CheckMateVerifier.isCheckMate(game)) {
+        return currentPlayerIsCurrentGamePlayer ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+      }
+      score += currentPlayerIsCurrentGamePlayer ? -CHECK_SCORE : CHECK_SCORE;
+
+    } else {
+      Game changedTurnGame = GameUtilHelper.changeTurnTemporarily(game);
+
+      boolean isCheckToOtherPlayer = KingCheckVerifier.gameIsCheck(changedTurnGame);
+
+      if (isCheckToOtherPlayer) {
+
+        if (CheckMateVerifier.isCheckMate(changedTurnGame)) {
+          return currentPlayerIsCurrentGamePlayer ? Integer.MAX_VALUE : Integer.MIN_VALUE;
+        }
+        score += currentPlayerIsCurrentGamePlayer ? CHECK_SCORE : -CHECK_SCORE;
+      } else {
+        if (StaleMateVerifier.isStaleMate(game)) return STALEMATE_SCORE;
+      }
+    }
 
     // Not parallel for thread safety
     for (Piece piece : currentPlayerPieces) {
@@ -77,20 +109,6 @@ public class AlgorithmMaterialScoreCalculator implements IAlgorithmScoreCalculat
         default:
       }
     }
-
-    // King might be captures in this case, cheaper than checking for checkmate for now
-    Optional<Piece> kingOptional =
-        currentPlayerPieces
-            .parallelStream()
-            .filter(p -> p.getPieceType() == PieceType.KING)
-            .findFirst();
-
-    if (kingOptional.isEmpty()) return Integer.MIN_VALUE;
-
-    boolean isCheckToCurrentPlayer =
-        KingCheckVerifier.positionIsCheck(kingOptional.get().getPosition(), idlePlayerPieces, game);
-
-    if (isCheckToCurrentPlayer) score -= 15;
 
     return score;
   }
